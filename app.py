@@ -149,8 +149,3 @@ if __name__ == "__main__":
     # Renderではgunicornを使うため、ここはローカル確認用
     port = int(os.environ.get("PORT", "5000"))
     app.run(host="0.0.0.0", port=port)
-'''
-
-path = Path("/mnt/data/app.py")
-path.write_text(app_code, encoding="utf-8")
-print(f"作成しました: {path}")
