@@ -1,6 +1,4 @@
-from pathlib import Path
-
-app_code = r'''import logging
+import logging
 import os
 
 from flask import Flask, abort, request
