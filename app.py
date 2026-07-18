@@ -1,5 +1,6 @@
 import logging
 import os
+import sqlite3
 
 from flask import Flask, abort, request
 from openai import OpenAI
@@ -42,6 +43,20 @@ if missing_variables:
 
 # 各サービスの初期設定
 app = Flask(__name__)
+def init_db():
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS line_users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            line_user_id TEXT UNIQUE NOT NULL,
+            phone_number TEXT
+        )
+    """)
+
+    conn.commit()
+    conn.close()
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 line_configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
@@ -130,17 +145,6 @@ https://www.peakmanager.com/online/index/b3m5y2?booking_source=googlemap&rwg_tok
 - 患者さんが予約希望を伝えた場合は、「こちらの予約サイトから空いている日時を確認してご予約ください」と案内する。
 - 当日予約や急ぎの場合は、070-1781-5454への電話も案内する。
 
-- 次のような形式で回答する。
-
-「ご予約希望ありがとうございます。
-空き状況をスタッフが確認いたしますので、次の内容をお送りください。
-
-①お名前
-②初めての来院・再来院
-③希望日時
-④症状または希望メニュー
-
-確認後、スタッフから予約確定のご連絡をいたします。」
 
 - 患者さんが必要事項を送った場合は、内容を簡潔に整理して復唱し、「スタッフからの確定連絡をお待ちください」と案内する。
 - 電話番号、保険証、クレジットカードなどの重要な個人情報はLINE上で要求しない。
