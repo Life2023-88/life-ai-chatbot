@@ -190,6 +190,7 @@ def callback():
 def handle_text_message(event):
     """ユーザーの文字メッセージをOpenAIへ送り、LINEへ返信する。"""
     user_message = (event.message.text or "").strip()
+    line_user_id = event.source.user_id
 
     if not user_message:
         reply_text = "メッセージを入力してください。"
@@ -216,9 +217,9 @@ def handle_text_message(event):
             )
 
     # LINEの文字数上限に余裕を持たせる
-    reply_text = reply_text[:4500]
+reply_text = reply_text[:4500]
 
-    try:
+try:
         with ApiClient(line_configuration) as api_client:
             line_bot_api = MessagingApi(api_client)
             line_bot_api.reply_message_with_http_info(
@@ -227,7 +228,7 @@ def handle_text_message(event):
                     messages=[TextMessage(text=reply_text)],
                 )
             )
-    except Exception:
+except Exception:
         logger.exception("LINEへの返信に失敗しました。")
 
 
