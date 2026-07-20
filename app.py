@@ -216,8 +216,8 @@ def handle_text_message(event):
                 "恐れ入りますが、少し時間を空けてもう一度お試しください。"
             )
 
-    # LINEの文字数上限に余裕を持たせる
-reply_text = reply_text[:4500]
+        # LINEの文字数上限に余裕を持たせる
+    reply_text = reply_text[:4500]
 
 try:
         with ApiClient(line_configuration) as api_client:
