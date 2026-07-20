@@ -219,17 +219,17 @@ def handle_text_message(event):
         # LINEの文字数上限に余裕を持たせる
     reply_text = reply_text[:4500]
 
-try:
-        with ApiClient(line_configuration) as api_client:
-            line_bot_api = MessagingApi(api_client)
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text=reply_text)],
+    try:
+            with ApiClient(line_configuration) as api_client:
+                line_bot_api = MessagingApi(api_client)
+                line_bot_api.reply_message_with_http_info(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text=reply_text)],
+                    )
                 )
-            )
-except Exception:
-        logger.exception("LINEへの返信に失敗しました。")
+    except Exception:
+            logger.exception("LINEへの返信に失敗しました。")
 
 
 if __name__ == "__main__":
