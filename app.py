@@ -1,6 +1,7 @@
 import logging
 import os
 import sqlite3
+import requests
 
 from flask import Flask, abort, request
 from openai import OpenAI
@@ -19,6 +20,7 @@ from linebot.v3.webhooks import MessageEvent, TextMessageContent
 # ログ設定
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx12vEldskY_7RN7MKYtA_Mb8KD0NqVlMTXFyBQ3FnZppfJlrRWC10fsWpiki_Pfu399w/exec"
 
 # RenderのEnvironment Variablesから秘密情報を読み込む
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")
@@ -199,10 +201,24 @@ def handle_text_message(event):
             "例：09012345678"
         )
     elif user_message.isdigit() and len(user_message) == 11:
-        reply_text = (
-            f"電話番号 {user_message} を受け付けました。\n"
-            "予約を確認しています。"
+        response = requests.get(
+            APPS_SCRIPT_URL,
+            params={"phone": user_message},
+            timeout=10,
         )
+
+        result = response.json()
+
+        if result["found"]:
+            reply_text = (
+                "予約を確認しました！\n"
+                "予約リマインドを登録しました。"
+            )
+        else:
+            reply_text = (
+                "その電話番号の予約が見つかりませんでした。\n"
+                "PeakManagerで予約した電話番号を確認してください。"
+            )
     elif not user_message:
         reply_text = "メッセージを入力してください。"
     else:
