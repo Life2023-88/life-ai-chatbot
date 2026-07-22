@@ -198,6 +198,11 @@ def handle_text_message(event):
             "ハイフンなしで送ってください。\n"
             "例：09012345678"
         )
+    elif user_message.isdigit() and len(user_message) == 11:
+        reply_text = (
+            f"電話番号 {user_message} を受け付けました。\n"
+            "予約を確認しています。"
+        )
     elif not user_message:
         reply_text = "メッセージを入力してください。"
     else:
@@ -235,7 +240,7 @@ def handle_text_message(event):
             )
     except Exception:
         logger.exception("LINEへの返信に失敗しました。")
-        
+
 
 if __name__ == "__main__":
     # Renderではgunicornを使うため、ここはローカル確認用
