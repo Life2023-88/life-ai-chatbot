@@ -54,11 +54,18 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             line_user_id TEXT UNIQUE NOT NULL,
             phone_number TEXT,
+            reservation_datetime TEXT
             reminder_enabled INTEGER DEFAULT 1,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
+    try:
+        cursor.execute(
+            "ALTER TABLE line_users ADD COLUMN reservation_datetime TEXT"
+        )
+    except sqlite3.OperationalError:
+        pass
+    
     conn.commit()
     conn.close()
 
