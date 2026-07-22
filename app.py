@@ -53,7 +53,9 @@ def init_db():
         CREATE TABLE IF NOT EXISTS line_users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             line_user_id TEXT UNIQUE NOT NULL,
-            phone_number TEXT
+            phone_number TEXT,
+            reminder_enabled INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -210,6 +212,20 @@ def handle_text_message(event):
         result = response.json()
 
         if result["found"]:
+            conn = sqlite3.connect("users.db")
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO line_users
+                (line_user_id, phone_number)
+                VALUES (?, ?)
+                """,
+                (event.source.user_id, user_message),
+            )
+
+            conn.commit()
+            conn.close()
             reply_text = (
                 "予約を確認しました！\n"
                 "予約リマインドを登録しました。"
