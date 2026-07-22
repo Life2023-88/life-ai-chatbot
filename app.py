@@ -191,51 +191,51 @@ def handle_text_message(event):
     """ユーザーの文字メッセージをOpenAIへ送り、LINEへ返信する。"""
     user_message = (event.message.text or "").strip()
     line_user_id = event.source.user_id
-if user_message == "予約リマインド登録":
-    reply_text = (
-        "予約リマインドを登録します。\n"
-        "PeakManagerで予約したときに入力した電話番号を、"
-        "ハイフンなしで送ってください。\n"
-        "例：09012345678"
-    )
-elif not user_message:
-    reply_text = "メッセージを入力してください。"
-else:
-    try:
-            response = openai_client.responses.create(
-                model=OPENAI_MODEL,
-                instructions=SYSTEM_INSTRUCTIONS,
-                input=user_message,
-                max_output_tokens=500,
-            )
-            reply_text = (response.output_text or "").strip()
-
-            if not reply_text:
-                reply_text = (
-                    "うまく回答を作成できませんでした。"
-                    "恐れ入りますが、もう一度送信してください。"
+    if user_message == "予約リマインド登録":
+        reply_text = (
+            "予約リマインドを登録します。\n"
+            "PeakManagerで予約したときに入力した電話番号を、"
+            "ハイフンなしで送ってください。\n"
+            "例：09012345678"
+        )
+    elif not user_message:
+        reply_text = "メッセージを入力してください。"
+    else:
+        try:
+                response = openai_client.responses.create(
+                    model=OPENAI_MODEL,
+                    instructions=SYSTEM_INSTRUCTIONS,
+                    input=user_message,
+                    max_output_tokens=500,
                 )
-    except Exception:
-            logger.exception("OpenAI APIの呼び出しに失敗しました。")
-            reply_text = (
-                "ただいまAIの応答に時間がかかっています。"
-                "恐れ入りますが、少し時間を空けてもう一度お試しください。"
-            )
+                reply_text = (response.output_text or "").strip()
 
-        # LINEの文字数上限に余裕を持たせる
-    reply_text = reply_text[:4500]
-
-    try:
-            with ApiClient(line_configuration) as api_client:
-                line_bot_api = MessagingApi(api_client)
-                line_bot_api.reply_message_with_http_info(
-                    ReplyMessageRequest(
-                        reply_token=event.reply_token,
-                        messages=[TextMessage(text=reply_text)],
+                if not reply_text:
+                    reply_text = (
+                        "うまく回答を作成できませんでした。"
+                        "恐れ入りますが、もう一度送信してください。"
                     )
+        except Exception:
+                logger.exception("OpenAI APIの呼び出しに失敗しました。")
+                reply_text = (
+                    "ただいまAIの応答に時間がかかっています。"
+                    "恐れ入りますが、少し時間を空けてもう一度お試しください。"
                 )
-    except Exception:
-            logger.exception("LINEへの返信に失敗しました。")
+
+            # LINEの文字数上限に余裕を持たせる
+        reply_text = reply_text[:4500]
+
+        try:
+                with ApiClient(line_configuration) as api_client:
+                    line_bot_api = MessagingApi(api_client)
+                    line_bot_api.reply_message_with_http_info(
+                        ReplyMessageRequest(
+                            reply_token=event.reply_token,
+                            messages=[TextMessage(text=reply_text)],
+                        )
+                    )
+        except Exception:
+                logger.exception("LINEへの返信に失敗しました。")
 
 
 if __name__ == "__main__":
