@@ -191,11 +191,17 @@ def handle_text_message(event):
     """ユーザーの文字メッセージをOpenAIへ送り、LINEへ返信する。"""
     user_message = (event.message.text or "").strip()
     line_user_id = event.source.user_id
-
-    if not user_message:
-        reply_text = "メッセージを入力してください。"
-    else:
-        try:
+if user_message == "予約リマインド登録":
+    reply_text = (
+        "予約リマインドを登録します。\n"
+        "PeakManagerで予約したときに入力した電話番号を、"
+        "ハイフンなしで送ってください。\n"
+        "例：09012345678"
+    )
+elif not user_message:
+    reply_text = "メッセージを入力してください。"
+else:
+    try:
             response = openai_client.responses.create(
                 model=OPENAI_MODEL,
                 instructions=SYSTEM_INSTRUCTIONS,
@@ -209,7 +215,7 @@ def handle_text_message(event):
                     "うまく回答を作成できませんでした。"
                     "恐れ入りますが、もう一度送信してください。"
                 )
-        except Exception:
+    except Exception:
             logger.exception("OpenAI APIの呼び出しに失敗しました。")
             reply_text = (
                 "ただいまAIの応答に時間がかかっています。"
