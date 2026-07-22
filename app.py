@@ -201,7 +201,7 @@ def handle_text_message(event):
     if user_message == "予約リマインド登録":
         reply_text = (
             "予約リマインドを登録します。\n"
-            "PeakManagerで予約したときに入力した電話番号を、"
+            "オンライン予約したときに入力した電話番号を、"
             "ハイフンなしで送ってください。\n"
             "例：09012345678"
         )
