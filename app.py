@@ -61,6 +61,9 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+init_db()
+
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 line_configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
