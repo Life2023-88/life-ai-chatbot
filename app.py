@@ -65,7 +65,7 @@ def init_db():
         )
     except sqlite3.OperationalError:
         pass
-    
+
     conn.commit()
     conn.close()
 
@@ -228,10 +228,14 @@ def handle_text_message(event):
             cursor.execute(
                 """
                 INSERT OR REPLACE INTO line_users
-                (line_user_id, phone_number)
-                VALUES (?, ?)
+                (line_user_id, phone_number, reservation_datetime)
+                VALUES (?, ?, ?)
                 """,
-                (event.source.user_id, user_message),
+                (
+                    event.source.user_id,
+                    user_message,
+                    result.get("reservationDateTime"),
+                ),
             )
 
             conn.commit()
