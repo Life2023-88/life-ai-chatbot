@@ -12,6 +12,7 @@ from linebot.v3.messaging import (
     Configuration,
     MessagingApi,
     ReplyMessageRequest,
+    PushMessageRequest,
     TextMessage,
 )
 from linebot.v3.webhooks import MessageEvent, TextMessageContent
@@ -199,6 +200,19 @@ def callback():
 
     return "OK", 200
 
+def send_test_push_message(line_user_id):
+    with ApiClient(line_configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        line_bot_api.push_message(
+            PushMessageRequest(
+                to=line_user_id,
+                messages=[
+                    TextMessage(
+                        text="【テスト】予約リマインドの自動送信テストです。"
+                    )
+                ],
+            )
+        )
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
