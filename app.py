@@ -219,7 +219,11 @@ def handle_text_message(event):
     """ユーザーの文字メッセージをOpenAIへ送り、LINEへ返信する。"""
     user_message = (event.message.text or "").strip()
     line_user_id = event.source.user_id
-    if user_message == "予約リマインド登録":
+    if user_message == "テスト通知":
+        send_test_push_message(line_user_id)
+        reply_text = "テスト通知を送信しました。"
+
+    elif user_message == "予約リマインド登録":
         reply_text = (
             "予約リマインドを登録します。\n"
             "オンライン予約したときに入力した電話番号を、"
